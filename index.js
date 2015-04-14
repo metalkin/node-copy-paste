@@ -62,7 +62,14 @@ exports.copy = function(text, callback) {
 	else {
 		var type = Object.prototype.toString.call(text);
 
-		if(type === "[object String]") { child.stdin.end(text); }
+		if(type === "[object String]") { 
+        		if(process.platform === 'win32') {
+				var utf16le = new Buffer(text, 'utf16le');
+        			child.stdin.end(utf16le);
+        		} else {
+        			child.stdin.end(text);
+			}
+		}
 		else if(type === "[object Object]") { child.stdin.end(util.inspect(text, { depth: null })); }
 		else if(type === "[object Array]") { child.stdin.end(util.inspect(text, { depth: null })); }
 		else { child.stdin.end(text.toString()); }
